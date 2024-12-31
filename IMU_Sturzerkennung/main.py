@@ -10,7 +10,6 @@ i2c = I2C(0, scl=Pin(22), sda=Pin(21))  # Passen Sie die Pins ggf. an Ihre Hardw
 imu = ADXL345_I2C(i2c)
 
 # LED konfigurieren
-led = Pin(13, Pin.OUT)
 led1 = Pin(2, Pin.OUT)
 
 # Button konfigurieren (GPIO 12)
@@ -45,7 +44,6 @@ while True:
         # Prüfe auf freien Fall
         if magnitude < FALL_THRESHOLD:
             fall_detected = True
-            led.value(1)  # LED einschalten
             led1.value(1)   # LED1 einschalten
 
             # Piezo-Lautsprecher dauerhaft aktivieren
@@ -55,7 +53,7 @@ while True:
         # Überprüfe, ob der Button gedrückt wurde
         if button.value() == 0:  # Button gedrückt (LOW)
             fall_detected = False  # Reset des Fall-Detektionsstatus
-            print("Reset1 fall detection.")
+            print("Reset fall detection.")
             led1.value(0)
             piezo.duty(0)  # Piezo ausschalten
         else:
