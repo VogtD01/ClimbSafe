@@ -2,7 +2,7 @@ from adafruit_rfm9x import *
 from machine import SPI, Pin
 
 #ESP32 Example
-led = Pin(2, Pin.OUT)
+led = Pin(2, Pin.IN, Pin.PULL_UP)
 CS = Pin(5, Pin.OUT)
 RESET = Pin(22, Pin.OUT)
 spi = SPI(2, baudrate=1000000, polarity=0, phase=0, bits=8, firstbit=0, sck=Pin(18), mosi=Pin(23), miso=Pin(19))
