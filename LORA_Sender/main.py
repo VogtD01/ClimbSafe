@@ -21,7 +21,8 @@ radio = RFM69(spi, CS, RESET, FREQ)
 print("RFM69 Sender bereit!")
 
 while True:
-    message = b"Hallo von ESP32!"
-    radio.send(message)
-    print("Gesendet:", message)
+    print("Warte auf Empfang...")
+    message = "Hello world!\r\n"
+    radio.send(bytes(message, "utf-8"))
+    print("Gesendet: Hallo Welt!")
     sleep(1)

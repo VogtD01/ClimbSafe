@@ -1,36 +1,24 @@
-# SPDX-FileCopyrightText: 2021 ladyada for Adafruit Industries
-# SPDX-License-Identifier: MIT
+from adafruit_rfm9x import *
+from machine import SPI, Pin
 
-# Simple demo of sending and recieving data with the RFM95 LoRa radio.
-# Author: Tony DiCola
-import board
-import busio
-import digitalio
+#ESP32 Example
+led = Pin(2, Pin.OUT)
+CS = Pin(5, Pin.OUT)
+RESET = Pin(22, Pin.OUT)
+spi = SPI(2, baudrate=1000000, polarity=0, phase=0, bits=8, firstbit=0, sck=Pin(18), mosi=Pin(23), miso=Pin(19))
+#CS = Pin(5, Pin.OUT)
+#RESET = Pin(22, Pin.OUT)
+#spi = SPI(2, baudrate=1000000, polarity=0, phase=0, bits=8, firstbit=0, sck=Pin(18), mosi=Pin(23), miso=Pin(19))
 
-import adafruit_rfm9x
+#ESP8266 Example
+#RADIO_FREQ_MHZ = 915.0
+#CS = Pin(2, Pin.OUT)
+#RESET = Pin(0, Pin.OUT)
+#spi = SPI(1, baudrate=5000000, polarity=0, phase=0)
 
-
-# Define radio parameters.
-RADIO_FREQ_MHZ = 433.0  # Frequency of the radio in Mhz. Must match your
-# module! Can be a value like 915.0, 433.0, etc.
-
-# Define pins connected to the chip, use these if wiring up the breakout according to the guide:
-CS = digitalio.DigitalInOut(board.D5)
-RESET = digitalio.DigitalInOut(board.D6)
-# Or uncomment and instead use these if using a Feather M0 RFM9x board and the appropriate
-# CircuitPython build:
-# CS = digitalio.DigitalInOut(board.RFM9X_CS)
-# RESET = digitalio.DigitalInOut(board.RFM9X_RST)
-
-# Define the onboard LED
-LED = digitalio.DigitalInOut(board.D13)
-LED.direction = digitalio.Direction.OUTPUT
-
-# Initialize SPI bus.
-spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
-
+RADIO_FREQ_MHZ = 433.0
 # Initialze RFM radio
-rfm9x = adafruit_rfm9x.RFM9x(spi, CS, RESET, RADIO_FREQ_MHZ)
+rfm9x = RFM9x(spi, CS, RESET, RADIO_FREQ_MHZ)
 
 # Note that the radio is configured in LoRa mode so you can't control sync
 # word, encryption, frequency deviation, or other settings!
@@ -59,11 +47,11 @@ while True:
     # If no packet was received during the timeout then None is returned.
     if packet is None:
         # Packet has not been received
-        LED.value = False
+        led.value = False
         print("Received nothing! Listening again...")
     else:
         # Received a packet!
-        LED.value = True
+        led.value = True
         # Print out the raw bytes of the packet:
         print("Received (raw bytes): {0}".format(packet))
         # And decode to ASCII text and print it too.  Note that you always
