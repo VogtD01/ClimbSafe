@@ -1,5 +1,5 @@
 from machine import Pin, SPI
-from time import sleep
+from time import sleep, ticks_ms, ticks_diff
 
 class RFM69:
     def __init__(self, spi, cs_pin, reset_pin, freq=433.0):
@@ -43,8 +43,8 @@ class RFM69:
 
     def receive(self, timeout=1.0):
         self.write_register(0x01, 0x10)  # Receive mode
-        start = sleep(0)
-        while sleep(0) - start < timeout:
+        start = ticks_ms()  # Startzeit in Millisekunden
+        while ticks_diff(ticks_ms(), start) < timeout * 1000:
             if self.read_register(0x28) & 0x04:  # PayloadReady
                 return self.read_fifo()
         return None
