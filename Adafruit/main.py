@@ -1,5 +1,6 @@
 from adafruit_rfm9x import *
 from machine import SPI, Pin
+import utime
 
 #ESP32 Example
 led = Pin(2)
@@ -45,6 +46,12 @@ while True:
     # Optionally change the receive timeout from its default of 0.5 seconds:
     # packet = rfm9x.receive(timeout=5.0)
     # If no packet was received during the timeout then None is returned.
+
+    # Send a packet every 5 seconds
+    rfm9x.send(bytes("Hello world!\r\n", "utf-8"))
+    print("Sent Hello World message!")
+    utime.sleep(5)
+    
     if packet is None:
         # Packet has not been received
         led.value(0)
