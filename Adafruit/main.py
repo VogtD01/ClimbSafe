@@ -1,32 +1,34 @@
 from adafruit_rfm9x import *
-from machine import SPI, Pin
-import utime
+from machine import SPI, Pin, PWM, I2C
+import time
+from ADXL345 import ADXL345_I2C
 
-#ESP32 Example
+#Lora
 led = Pin(2)
 CS = Pin(5, Pin.OUT)
-RESET = Pin(22, Pin.OUT)
+RESET = Pin(34, Pin.OUT)
 spi = SPI(2, baudrate=1000000, polarity=0, phase=0, bits=8, firstbit=0, sck=Pin(18), mosi=Pin(23), miso=Pin(19))
-#CS = Pin(5, Pin.OUT)
-#RESET = Pin(22, Pin.OUT)
-#spi = SPI(2, baudrate=1000000, polarity=0, phase=0, bits=8, firstbit=0, sck=Pin(18), mosi=Pin(23), miso=Pin(19))
-
-#ESP8266 Example
-#RADIO_FREQ_MHZ = 915.0
-#CS = Pin(2, Pin.OUT)
-#RESET = Pin(0, Pin.OUT)
-#spi = SPI(1, baudrate=5000000, polarity=0, phase=0)
-
 RADIO_FREQ_MHZ = 433.0
 # Initialze RFM radio
 rfm9x = RFM9x(spi, CS, RESET, RADIO_FREQ_MHZ)
-
-# Note that the radio is configured in LoRa mode so you can't control sync
-# word, encryption, frequency deviation, or other settings!
-
-# You can however adjust the transmit power (in dB).  The default is 13 dB but
-# high power radios like the RFM95 can go up to 23 dB:
 rfm9x.tx_power = 23
+
+# IMU
+i2c = I2C(0, scl=Pin(22), sda=Pin(21))  
+imu = ADXL345_I2C(i2c)
+
+# Piezo-speaker
+piezo_pin = PWM(Pin(25))
+piezo_pin.freq(440)  
+piezo_pin.duty(0)  
+
+# Led
+red = Pin(13, Pin.OUT)
+green = Pin(12, Pin.OUT)
+
+# Button
+button = Pin(14, Pin.IN, Pin.PULL_UP)
+
 
 # Send a packet.  Note you can only send a packet up to 252 bytes in length.
 # This is a limitation of the radio packet size, so if you need to send larger
@@ -35,10 +37,7 @@ rfm9x.tx_power = 23
 rfm9x.send(bytes("Hello world!\r\n", "utf-8"))
 print("Sent Hello World message!")
 
-# Wait to receive packets.  Note that this library can't receive data at a fast
-# rate, in fact it can only receive and process one 252 byte packet at a time.
-# This means you should only use this for low bandwidth scenarios, like sending
-# and receiving a single message at a time.
+# Wait to receive packets. 
 print("Waiting for packets...")
 
 while True:
@@ -50,7 +49,7 @@ while True:
     # Send a packet every 5 seconds
     rfm9x.send(bytes("Hello world!\r\n", "utf-8"))
     print("Sent Hello World message!")
-    utime.sleep(5)
+    time.sleep(5)
     
     if packet is None:
         # Packet has not been received
