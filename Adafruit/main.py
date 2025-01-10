@@ -25,7 +25,8 @@ piezo_pin.duty(0)
 # LED
 red = Pin(13, Pin.OUT, value=0)
 green = Pin(12, Pin.OUT, value=0)
-blue = Pin(33, Pin.OUT, value=0)
+blue = Pin(2, Pin.OUT, value=0)
+
 
 # Button
 button = Pin(14, Pin.IN, Pin.PULL_UP)
@@ -41,15 +42,16 @@ def button_pressed_handler(pin):
 button.irq(trigger=Pin.IRQ_FALLING, handler=button_pressed_handler)
 
 print("Sent Hello World message!")
-
-# Wait to receive packets.
 print("Waiting for packets...")
 
 # Activate the piezo speaker for 5 seconds
 piezo_pin.duty(400)
-time.sleep(5)
+blue.value(1)
 red.value(1)
+time.sleep(1)
+
 piezo_pin.duty(0)
+blue.value(0)
 red.value(0)
 
 while True:
@@ -73,7 +75,7 @@ while True:
             red.value(1)  # Turn on the red LED
             green.value(1)  # Turn on the green LED
             piezo_pin.duty(512)
-            time.sleep(5)
+            time.sleep(1)
             red.value(0)  # Turn off the red LED
             green.value(0)  # Turn off the green LED
             piezo_pin.duty(0)

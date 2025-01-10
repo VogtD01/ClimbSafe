@@ -1,14 +1,18 @@
+import machine
 import time
-from machine import Pin
 
-led_pin = Pin(2, Pin.OUT)
+# Set up the piezo on pin 15 with PWM
+piezo = machine.PWM(machine.Pin(15))
+piezo.freq(1000)  # Set frequency to 1000 Hz
 
-while 1:
-    print('Congratulation, the setup works, you are a genius10')
+# Function to test the piezo with PWM
+def test_piezo():
+    for _ in range(10):
+        piezo.duty(512)  # Set duty cycle to 50%
+        time.sleep(0.5)
+        piezo.duty(0)  # Turn off the piezo
+        time.sleep(0.5)
 
-    time.sleep(0.2)
-    led_pin.on()
-
-    time.sleep(1)
-    led_pin.off()
-     
+# Run the test
+test_piezo()
+print("Piezo test complete!")
