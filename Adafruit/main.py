@@ -68,6 +68,7 @@ while True:
         # Check if the received message is "Button gedrückt"
         if packet_text == "Button gedrückt!\r\n":
             red.value(1)  # Turn on the red LED
+            time.sleep(0.5)
         else:
             red.value(0)  # Turn off the red LED
         
