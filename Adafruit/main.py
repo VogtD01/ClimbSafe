@@ -23,9 +23,9 @@ piezo_pin.freq(440)
 piezo_pin.duty(0)  
 
 # Led
-red = Pin(13, Pin.OUT)
-green = Pin(12, Pin.OUT)
-
+red = Pin(13, Pin.OUT, value=0)
+green = Pin(12, Pin.OUT, value=0)
+blue = Pin(33, Pin.OUT, value=0)
 # Button
 button = Pin(14, Pin.IN, Pin.PULL_UP)
 
