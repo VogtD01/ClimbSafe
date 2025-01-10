@@ -51,11 +51,11 @@ while True:
 
     if packet is None:
         # Packet has not been received
-        green.value(0)
+        #green.value(0)
         print("Received nothing! Listening again...")
     else:
         # Received a packet!
-        green.value(1)
+        #green.value(1)
         # Print out the raw bytes of the packet:
         print("Received (raw bytes): {0}".format(packet))
         # And decode to ASCII text and print it too.  Note that you always
