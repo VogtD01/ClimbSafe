@@ -30,11 +30,14 @@ green = Pin(12, Pin.OUT)
 button = Pin(14, Pin.IN, Pin.PULL_UP)
 
 
-# Send a packet.  Note you can only send a packet up to 252 bytes in length.
-# This is a limitation of the radio packet size, so if you need to send larger
-# amounts of data you will need to break it into smaller send calls.  Each send
-# call will wait for the previous one to finish before continuing.
-rfm9x.send(bytes("Hello world!\r\n", "utf-8"))
+#Interrupt handler for button press
+def button_pressed_handler(pin):
+    rfm9x.send(bytes("Button gedrückt!\r\n", "utf-8"))
+    print("Button gedrückt Nachricht gesendet!")
+
+# Set up the button interrupt
+button.irq(trigger=Pin.IRQ_FALLING, handler=button_pressed_handler)
+
 print("Sent Hello World message!")
 
 # Wait to receive packets. 
@@ -46,10 +49,6 @@ while True:
     # packet = rfm9x.receive(timeout=5.0)
     # If no packet was received during the timeout then None is returned.
 
-    # Send a packet every 5 seconds
-    rfm9x.send(bytes("Hello world!\r\n", "utf-8"))
-    print("Sent Hello World message!")
-    time.sleep(5)
     
     if packet is None:
         # Packet has not been received
