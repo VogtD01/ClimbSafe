@@ -3,7 +3,7 @@ from machine import SPI, Pin, PWM, I2C
 import time
 from ADXL345 import ADXL345_I2C
 
-#Lora
+# Lora
 led = Pin(2)
 CS = Pin(5, Pin.OUT)
 RESET = Pin(27, Pin.OUT)
@@ -14,65 +14,63 @@ rfm9x = RFM9x(spi, CS, RESET, RADIO_FREQ_MHZ)
 rfm9x.tx_power = 23
 
 # IMU
-i2c = I2C(0, scl=Pin(22), sda=Pin(21))  
+i2c = I2C(0, scl=Pin(22), sda=Pin(21))
 imu = ADXL345_I2C(i2c)
 
 # Piezo-speaker
 piezo_pin = PWM(Pin(25))
-piezo_pin.freq(440)  
-piezo_pin.duty(0)  
+piezo_pin.freq(440)
+piezo_pin.duty(0)
 
-# Led
+# LED
 red = Pin(13, Pin.OUT, value=0)
 green = Pin(12, Pin.OUT, value=0)
 blue = Pin(33, Pin.OUT, value=0)
+
 # Button
 button = Pin(14, Pin.IN, Pin.PULL_UP)
 
 
-#Interrupt handler for button press
+# Interrupt handler for button press
 def button_pressed_handler(pin):
     rfm9x.send(bytes("Button gedrückt!\r\n", "utf-8"))
     print("Button gedrückt Nachricht gesendet!")
+
 
 # Set up the button interrupt
 button.irq(trigger=Pin.IRQ_FALLING, handler=button_pressed_handler)
 
 print("Sent Hello World message!")
 
-# Wait to receive packets. 
+# Wait to receive packets.
 print("Waiting for packets...")
 
 while True:
     packet = rfm9x.receive()
     # Optionally change the receive timeout from its default of 0.5 seconds:
     # packet = rfm9x.receive(timeout=5.0)
-    # If no packet was received during the timeout then None is returned.
+    # If no packet was received during the timeout, then None is returned.
 
     if packet is None:
         # Packet has not been received
-        #green.value(0)
         print("Received nothing! Listening again...")
     else:
         # Received a packet!
-        #green.value(1)
-        # Print out the raw bytes of the packet:
         print("Received (raw bytes): {0}".format(packet))
-        # And decode to ASCII text and print it too.  Note that you always
-        # receive raw bytes and need to convert to a text format like ASCII
-        # if you intend to do string processing on your data.  Make sure the
-        # sending side is sending ASCII data before you try to decode!
+        # Decode to ASCII text and print it
         packet_text = str(packet, "ascii")
         print("Received (ASCII): {0}".format(packet_text))
-        
+
         # Check if the received message is "Button gedrückt"
         if packet_text == "Button gedrückt!\r\n":
             red.value(1)  # Turn on the red LED
+            green.value(1)  # Turn on the green LED
+            piezo_pin.duty(512)
             time.sleep(0.5)
-        else:
             red.value(0)  # Turn off the red LED
-        
-        # Also read the RSSI (signal strength) of the last received message and
-        # print it.
+            green.value(0)  # Turn off the green LED
+            piezo_pin.duty(0)
+
+        # Read and print the RSSI (signal strength) of the last received message
         rssi = rfm9x.last_rssi
         print("Received signal strength: {0} dB".format(rssi))
