@@ -1,0 +1,14 @@
+Hoi Felix
+
+
+Code funktioniert meiner meinung nach genau wie besprochen. Sehr nice. Bis auf den einen piezo halt
+
+Die funktionen sind so separiert sodass man finde ich übersichtlich und leicht ändern kann in welchen zustand,
+man bei sender oder empfänger, wie den Piezo und die Leds ansteuern will. 
+
+Funktionen wenns geht wär nice wenn man die noch in die funktions rüber schieben kann
+
+sonst steuern wir halt jetzt immer mit time sleep. 
+Weiß nicht ob man vielleicht igrndwie besser machen sollte. das wär noch n ding 
+
+Nachrichten werden schon binär geschickt, also eigentlich Effiient meiner meinung nach.
