@@ -18,7 +18,7 @@ i2c = I2C(0, scl=Pin(22), sda=Pin(21))
 imu = ADXL345_I2C(i2c)
 
 # Piezo-speaker
-piezo_pin = PWM(Pin(25))
+piezo_pin = PWM(Pin(15))
 piezo_pin.freq(440)
 piezo_pin.duty(0)
 
@@ -45,6 +45,13 @@ print("Sent Hello World message!")
 # Wait to receive packets.
 print("Waiting for packets...")
 
+# Activate the piezo speaker for 5 seconds
+piezo_pin.duty(400)
+time.sleep(5)
+red.value(1)
+piezo_pin.duty(0)
+red.value(0)
+
 while True:
     packet = rfm9x.receive()
     # Optionally change the receive timeout from its default of 0.5 seconds:
@@ -66,7 +73,7 @@ while True:
             red.value(1)  # Turn on the red LED
             green.value(1)  # Turn on the green LED
             piezo_pin.duty(512)
-            time.sleep(0.5)
+            time.sleep(5)
             red.value(0)  # Turn off the red LED
             green.value(0)  # Turn off the green LED
             piezo_pin.duty(0)
