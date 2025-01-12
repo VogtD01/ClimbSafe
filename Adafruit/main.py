@@ -62,6 +62,12 @@ def button_pressed_handler(pin):
         print("Button gedrückt Nachricht gesendet!")
         f.einmal_drücken_nachricht(piezo_pin)  # Funktion für das einmalige Drücken
 
+
+# Initialisiere Variablen für den Button-Interrupt
+last_button_press_time = 0
+button_press_count = 0
+
+
 # Button-Interrupt hinzufügen
 button.irq(trigger=Pin.IRQ_FALLING, handler=button_pressed_handler)
 
@@ -71,6 +77,7 @@ print("Waiting for packets...")
 # Ab hier der Hauptteil des Programms
 
 f.anschalten(red, blue, piezo_pin)  # Gerät einschalten
+
 
 while True:
     # Empfange ein Paket mit den RFM9x-Funkmodul
