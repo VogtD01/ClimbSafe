@@ -101,7 +101,7 @@ while True:
         # Nachricht senden: "100" für freien Fall erkannt
         rfm9x.send(bytes([0b100]))
         print("Fall detected Nachricht gesendet!")
-        f.fall_sender(red, blue, piezo_pin, fall_detected)  # Funktion für das Sendegerät nach einem Fall
+        f.fall_sender(red, blue, piezo_pin)  # Funktion für das Sendegerät nach einem Fall
 
     if packet is None:
         # Kein Paket empfangen
@@ -115,10 +115,10 @@ while True:
             f.button_nachricht(red, green, piezo_pin)  # Funktion für das Empfängergerät
 
         elif packet[0] == 0b100:  # "100" entspricht "Fall erkannt"
-            f.fall_nachricht_empfänger(red, blue, piezo_pin, fall_detected)  # Funktion für das Empfängergerät nach einem Fall
+            f.fall_nachricht_empfänger(red, blue, piezo_pin)  # Funktion für das Empfängergerät nach einem Fall
 
         elif packet[0] == 0b010:  # "010" entspricht "Doppelklick, Verletzt"
-            f.verletzt_nachricht_empfänger(red, green, piezo_pin, fall_detected)  # Funktion für das Empfängergerät bei Verletzung
+            f.verletzt_nachricht_empfänger(red, green, piezo_pin)  # Funktion für das Empfängergerät bei Verletzung
 
         # Signalstärke (RSSI) des empfangenen Pakets auslesen und ausgeben
         rssi = rfm9x.last_rssi
