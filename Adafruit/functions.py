@@ -91,7 +91,7 @@ def fall_nachricht_empfänger(red, blue, piezo_pin):
 
         # Wenn 10 Sekunden vergangen sind und der Zustand noch aktiv ist, Piezo einschalten
         if time.time() - start_time >= 10:
-            piezo_pin.duty(512)  # Piezo aktivieren
+            piezo_pattern(piezo_pin, duration=1, on_time=0.2, off_time=0.3)  # Kürzeres Muster
 
         time.sleep(0.1)  # Kurze Pause, um CPU-Last zu reduzieren
 
@@ -114,7 +114,7 @@ def verletzt_nachricht_empfänger(red, green, piezo_pin):
     while status.fall_detected:
         red.value(1)
         green.value(0)
-        piezo_pin.duty(512)  # Piezo aktivieren
+        piezo_pattern(piezo_pin, duration=1, on_time=0.5, off_time=0.5)  # Kürzeres Muster
         time.sleep(0.5)
 
         red.value(0)
@@ -126,3 +126,21 @@ def verletzt_nachricht_empfänger(red, green, piezo_pin):
     red.value(0)
     green.value(0)
     piezo_pin.duty(0)
+
+
+def piezo_pattern(piezo_pin, duration=10, on_time=0.5, off_time=0.5):
+    """
+    Erzeugt ein akustisches Muster für den Piezo-Lautsprecher.
+
+    Args:
+        piezo_pin (PWM): Der Pin, der den Piezo steuert.
+        duration (float): Gesamtdauer des Musters in Sekunden.
+        on_time (float): Dauer, für die der Piezo eingeschaltet bleibt (Sekunden).
+        off_time (float): Dauer, für die der Piezo ausgeschaltet bleibt (Sekunden).
+    """
+    start_time = time.time()
+    while time.time() - start_time < duration:
+        piezo_pin.duty(512)  # Piezo aktivieren
+        time.sleep(on_time)  # Zeit für Ton
+        piezo_pin.duty(0)    # Piezo deaktivieren
+        time.sleep(off_time)  # Pause
