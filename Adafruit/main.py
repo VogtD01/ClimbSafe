@@ -4,6 +4,7 @@ from ADXL345 import ADXL345_I2C
 import time
 import math
 import functions as f # Importiere die ausgelagerten Funktionen
+import status # Importiere die ausgelagerten Statusvariablen
 
 # Lora
 led = Pin(2)
@@ -38,12 +39,13 @@ fall_detected = False
 # Button
 button = Pin(14, Pin.IN, Pin.PULL_UP)
 
+
 # Funktion für den Button-Interrupt
 def button_pressed_handler(pin):
     """Funktion, die aufgerufen wird, wenn der Button gedrückt wird."""
     global fall_detected, last_button_press_time, button_press_count
-    current_time = time.time()
-    if current_time - last_button_press_time <= 2:
+    current_time = time.ticks_ms()
+    if time.ticks_diff(current_time, last_button_press_time) <= 2000:
         button_press_count += 1
     else:
         button_press_count = 1
@@ -51,17 +53,15 @@ def button_pressed_handler(pin):
     last_button_press_time = current_time
 
     if button_press_count == 2:
-        # Nachricht senden: "010" für zweimaliges Drücken innerhalb von 3 Sekunden
         rfm9x.send(bytes([0b010]))
         print("Doppelklick Nachricht gesendet!")
-        f.zweimal_drücken_nachricht(piezo_pin)  # Funktion für das zweimalige Drücken
+        f.zweimal_drücken_nachricht(piezo_pin)
     else:
-        # Nachricht senden: "001" für einmaliges Drücken
-        fall_detected = False  # Beende den Fallzustand, wenn der Button gedrückt wird
+        #fall_detected = False
+        status.fall_detected = False
         rfm9x.send(bytes([0b001]))
         print("Button gedrückt Nachricht gesendet!")
-        f.einmal_drücken_nachricht(piezo_pin)  # Funktion für das einmalige Drücken
-
+        f.einmal_drücken_nachricht(piezo_pin)
 
 # Initialisiere Variablen für den Button-Interrupt
 last_button_press_time = 0

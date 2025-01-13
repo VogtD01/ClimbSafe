@@ -1,7 +1,8 @@
 import math
 import time
 from machine import Pin, PWM
-import main
+#import main
+import status
 
 # fall_detected = main.fall_detected <--------------------------------------------------------------------------------------------
 
@@ -45,6 +46,10 @@ def button_nachricht(red, green, piezo_pin):
     green.value(0)  # Grüne LED ausschalten
     piezo_pin.duty(0)  # Piezo deaktivieren
 
+
+##############
+
+
 def fall_sender(red, blue, piezo_pin):
     """Funktion, um den Zustand nach dem Sturz beim Sender zu behandeln.
     
@@ -52,27 +57,20 @@ def fall_sender(red, blue, piezo_pin):
     Nach 10
     Sekunden wird der Piezo-Summer aktiviert, wenn der Button nicht in der zeit gedrückt wurde."""
 
-    # LEDs aktivieren und Piezo erst
-    # nach 10 Sekunden einschalten, falls der Button nicht gedrückt wird
-    start_time = time.time()  # Startzeitpunkt erfassen
-
-    #global fall_detected <--------------------------------------------------------------------------------------------
-
-    while main.fall_detected:
+    start_time = time.time()
+    while status.fall_detected:  # Zugriff über das Modul
         red.value(1)
         blue.value(1)
 
-        # Wenn 10 Sekunden vergangen sind und der Zustand noch aktiv ist, Piezo einschalten
         if time.time() - start_time >= 10:
             piezo_pin.duty(200)
 
-        time.sleep(0.1)  # Kurze Pause, um CPU-Last zu reduzieren
+        time.sleep(0.1)
 
-    # Zustand beendet, LEDs und Piezo ausschalten
     red.value(0)
     blue.value(0)
     piezo_pin.duty(0)
-    
+############
 
 def fall_nachricht_empfänger(red, blue, piezo_pin):
     """Funktion, um den Zustand "Fall erkannt" zu behandeln.
@@ -84,10 +82,10 @@ def fall_nachricht_empfänger(red, blue, piezo_pin):
     # LEDs aktivieren und Piezo erst nach 10 Sekunden einschalten, falls der Button nicht gedrückt wird
 
     # global fall_detected<--------------------------------------------------------------------------------------------
-    main.fall_detected = True
+    status.fall_detected = True
     start_time = time.time()  # Startzeitpunkt erfassen
 
-    while main.fall_detected:
+    while status.fall_detected:
         red.value(1)  # Rote LED einschalten
         blue.value(1)  # Blaue LED einschalten
 
@@ -111,9 +109,9 @@ def verletzt_nachricht_empfänger(red, green, piezo_pin):
     # LEDs und Piezo aktivieren, bis der Zustand beendet wird
 
     # global fall_detected<--------------------------------------------------------------------------------------------
-    main.fall_detected = True
+    status.fall_detected = True
 
-    while main.fall_detected:
+    while status.fall_detected:
         red.value(1)
         green.value(0)
         piezo_pin.duty(512)  # Piezo aktivieren
