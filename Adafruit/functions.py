@@ -91,7 +91,7 @@ def fall_nachricht_empfänger(red, blue, piezo_pin):
 
         # Wenn 10 Sekunden vergangen sind und der Zustand noch aktiv ist, Piezo einschalten
         if time.time() - start_time >= 10:
-            piezo_pattern(piezo_pin, duration=1, on_time=0.2, off_time=0.3)  # Kürzeres Muster
+            piezo_pattern(piezo_pin, duration=1, on_time=0.1, off_time=0.2)  # Kürzeres Muster
 
         time.sleep(0.1)  # Kurze Pause, um CPU-Last zu reduzieren
 
@@ -114,7 +114,7 @@ def verletzt_nachricht_empfänger(red, green, piezo_pin):
     while status.fall_detected:
         red.value(1)
         green.value(0)
-        piezo_pattern(piezo_pin, duration=1, on_time=0.5, off_time=0.5)  # Kürzeres Muster
+        piezo_pattern(piezo_pin, duration=10, on_time=0.4, off_time=0.4)  # Kürzeres Muster
         time.sleep(0.5)
 
         red.value(0)

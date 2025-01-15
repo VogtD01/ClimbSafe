@@ -2,47 +2,54 @@ from machine import SPI, Pin, PWM, I2C
 from adafruit_rfm9x import *
 from ADXL345 import ADXL345_I2C
 import time
-import math
 import functions as f # Importiere die ausgelagerten Funktionen
 import status # Importiere die ausgelagerten Statusvariablen
 
-# Lora
-led = Pin(2)
-CS = Pin(5, Pin.OUT)
+# Lora Konfiguration
+CS = Pin(5, Pin.OUT)  
 RESET = Pin(27, Pin.OUT)
 spi = SPI(2, baudrate=1000000, polarity=0, phase=0, bits=8, firstbit=0, sck=Pin(18), mosi=Pin(23), miso=Pin(19))
 RADIO_FREQ_MHZ = 433.0
+
 # Initialisiere RFM radio
 rfm9x = RFM9x(spi, CS, RESET, RADIO_FREQ_MHZ)
 rfm9x.tx_power = 23
 
-# IMU
-i2c = I2C(0, scl=Pin(22), sda=Pin(21))
+#-------------------------------------------------------------------------------------------------------
+
+# IMU Konfiguration
+i2c = I2C(0, scl=Pin(22), sda=Pin(21)) # I2C-Verbindung
 imu = ADXL345_I2C(i2c)
 
-# LED
-red = Pin(13, Pin.OUT, value=0)
-green = Pin(12, Pin.OUT, value=0)
-blue = Pin(2, Pin.OUT, value=0)  # LED am ESP32 zur Kontrolle
+# Freier Fall Konfiguration
+FALL_THRESHOLD = 0.35  # Schwellenwert für freien Fall (nahe 0 g in allen Achsen)
+fall_detected = False # Variable, um zu speichern, ob ein freier Fall erkannt wurde
+
+# LED Konfiguration
+red = Pin(13, Pin.OUT )
+green = Pin(12, Pin.OUT)
+blue = Pin(2, Pin.OUT )  # LED am ESP32 zur Kontrolle
 
 # Piezo-speaker
 piezo_pin = PWM(Pin(15))
-piezo_pin.freq(440)
+piezo_pin.freq(1000)
 piezo_pin.duty(0)
-
-# Schwellenwert für freien Fall (nahe 0 g in allen Achsen)
-FALL_THRESHOLD = 0.35  # g-Wert, anpassbar
-
-# Variable, um zu speichern, ob ein freier Fall erkannt wurde
-fall_detected = False
 
 # Button
 button = Pin(14, Pin.IN, Pin.PULL_UP)
 
+# Initialisiere Variablen für den Button-Interrupt
+last_button_press_time = 0
+button_press_count = 0
+
 
 # Funktion für den Button-Interrupt
 def button_pressed_handler(pin):
-    """Funktion, die aufgerufen wird, wenn der Button gedrückt wird."""
+    """Funktion, die aufgerufen wird, wenn der Button gedrückt wird.
+    
+    Diese Funktion sendet eine Nachricht über das Funkmodul, wenn der Button gedrückt wird.
+    Bei einem Doppelklick wird eine andere Nachricht gesendet."""
+
     global fall_detected, last_button_press_time, button_press_count
     current_time = time.ticks_ms()
     if time.ticks_diff(current_time, last_button_press_time) <= 2000:
@@ -57,20 +64,17 @@ def button_pressed_handler(pin):
         print("Doppelklick Nachricht gesendet!")
         f.zweimal_drücken_nachricht(piezo_pin)
     else:
-        #fall_detected = False
         status.fall_detected = False
         rfm9x.send(bytes([0b001]))
         print("Button gedrückt Nachricht gesendet!")
         f.einmal_drücken_nachricht(piezo_pin)
 
-# Initialisiere Variablen für den Button-Interrupt
-last_button_press_time = 0
-button_press_count = 0
-
 
 # Button-Interrupt hinzufügen
 button.irq(trigger=Pin.IRQ_FALLING, handler=button_pressed_handler)
 
+
+#--------------------------------------------------------------------------------------------------------------------
 print("Sent Hello World message!")
 print("Waiting for packets...")
 
