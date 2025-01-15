@@ -114,7 +114,7 @@ def verletzt_nachricht_empfänger(red, green, piezo_pin):
     while status.fall_detected:
         red.value(1)
         green.value(0)
-        piezo_pattern(piezo_pin, duration=10, on_time=0.4, off_time=0.4)  # Kürzeres Muster
+        piezo_pattern(piezo_pin, duration=0.8, on_time=0.4, off_time=0.4)  # Kürzeres Muster
         time.sleep(0.5)
 
         red.value(0)

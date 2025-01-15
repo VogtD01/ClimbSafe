@@ -23,7 +23,7 @@ imu = ADXL345_I2C(i2c)
 
 # Freier Fall Konfiguration
 FALL_THRESHOLD = 0.35  # Schwellenwert für freien Fall (nahe 0 g in allen Achsen)
-fall_detected = False # Variable, um zu speichern, ob ein freier Fall erkannt wurde
+
 
 # LED Konfiguration
 red = Pin(13, Pin.OUT )
@@ -50,7 +50,7 @@ def button_pressed_handler(pin):
     Diese Funktion sendet eine Nachricht über das Funkmodul, wenn der Button gedrückt wird.
     Bei einem Doppelklick wird eine andere Nachricht gesendet."""
 
-    global fall_detected, last_button_press_time, button_press_count
+    global last_button_press_time, button_press_count
     current_time = time.ticks_ms()
     if time.ticks_diff(current_time, last_button_press_time) <= 2000:
         button_press_count += 1
@@ -97,7 +97,7 @@ while True:
 
     # Prüfe auf freien Fall anhand eines Schwellenwerts
     if magnitude < FALL_THRESHOLD:
-        fall_detected = True
+        
         blue.value(1)  # Blaue LED einschalten
         time.sleep(5)  # LED für 5 Sekunden anlassen
         blue.value(0)  # Blaue LED ausschalten
