@@ -75,18 +75,18 @@ def button_pressed_handler(pin):
 # Interrupt-Handler für den Button
 
 
-'''def debounce(pin):
+def debounce(pin):
 	# Timer wird mit einer Verzögerung von 200ms gestartet. 
 	# Nach Ablauf wird die callback Funktion "button_pressed_handler" aufgerufen
-	timer.init(mode=Timer.ONE_SHOT, period=200, callback=button_pressed_handler)'''
+	timer.init(mode=Timer.ONE_SHOT, period=200, callback=button_pressed_handler)
 
 # Hardware timer init.
-#timer = Timer(0)
+timer = Timer(0)
 timer1 = Timer(1)
 ###########################################################
 
 # Button-Interrupt hinzufügen
-button.irq(trigger=Pin.IRQ_FALLING, handler=button_pressed_handler)
+button.irq(trigger=Pin.IRQ_FALLING, handler=debounce)
 
 
 #--------------------------------------------------------------------------------------------------------------------
