@@ -85,7 +85,7 @@ timer = Timer(0)
 ###########################################################
 
 # Button-Interrupt hinzufügen
-button.irq(trigger=Pin.IRQ_FALLING, handler=button_pressed_handler)
+button.irq(trigger=Pin.IRQ_FALLING, handler=debounce)
 
 
 #--------------------------------------------------------------------------------------------------------------------

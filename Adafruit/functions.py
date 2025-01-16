@@ -1,7 +1,6 @@
 import math
 import time
 from machine import Pin, PWM
-#import main
 import status
 
 # fall_detected = main.fall_detected <--------------------------------------------------------------------------------------------
