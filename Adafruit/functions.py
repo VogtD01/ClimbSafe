@@ -26,6 +26,7 @@ def drücken_nachricht(red, green, piezo_pin):
 
 def button_nachricht(red, green, piezo_pin):
     """Funktion, um den Zustand "Button gedrückt" zu behandeln beim Empfänger."""
+    status.fall_detected = False
     red.value(1)  # Rote LED einschalten
     green.value(1)  # Grüne LED einschalten
     piezo_pin.duty(512)  # Piezo aktivieren
@@ -54,18 +55,17 @@ def fall_sender(red, blue, piezo_pin):
     Sekunden wird der Piezo-Summer aktiviert, wenn der Button nicht in der zeit gedrückt wurde."""
 
     start_time = time.time()
+    status.fall_detected = True  # Zugriff über das Modul
+    
     while status.fall_detected:  # Zugriff über das Modul
         red.value(1)
-        blue.value(1)
-
+        
         if time.time() - start_time >= 10:
-            piezo_pin.duty(200)
+            piezo_pin.duty(500)
 
         time.sleep(0.1)
 
-    red.value(0)
-    blue.value(0)
-    piezo_pin.duty(0)
+    ausschalten(red, blue, piezo_pin)
 ############
 
 def fall_nachricht_empfänger(red, blue, piezo_pin):
@@ -82,19 +82,12 @@ def fall_nachricht_empfänger(red, blue, piezo_pin):
     start_time = time.time()  # Startzeitpunkt erfassen
 
     while status.fall_detected:
-        red.value(1)  # Rote LED einschalten
         blue.value(1)  # Blaue LED einschalten
-
-        # Wenn 10 Sekunden vergangen sind und der Zustand noch aktiv ist, Piezo einschalten
-        if time.time() - start_time >= 10:
-            piezo_pattern(piezo_pin, duration=1, on_time=0.1, off_time=0.2)  # Kürzeres Muster
+        piezo_pattern(piezo_pin, duration=1, on_time=0.1, off_time=0.2)  # Kürzeres Muster
 
         time.sleep(0.1)  # Kurze Pause, um CPU-Last zu reduzieren
 
-    # Zustand beendet, LEDs und Piezo ausschalten
-    red.value(0)  # Rote LED ausschalten
-    blue.value(0)  # Blaue LED ausschalten
-    piezo_pin.duty(0)  # Piezo deaktivieren
+    ausschalten(red, blue, piezo_pin)  # LEDs und Piezo ausschalten
 
 def verletzt_nachricht_empfänger(red, green, piezo_pin):
     """Funktion, um den Zustand "Verletzung erkannt" zu behandeln.
@@ -118,11 +111,7 @@ def verletzt_nachricht_empfänger(red, green, piezo_pin):
         piezo_pin.duty(0)  # Piezo bleibt aktiv
         time.sleep(0.5)
 
-    # Zustand beendet, LEDs und Piezo ausschalten
-    red.value(0)
-    green.value(0)
-    piezo_pin.duty(0)
-
+    ausschalten(red, green, piezo_pin)  # LEDs und Piezo ausschalten
 
 def piezo_pattern(piezo_pin, duration=10, on_time=0.5, off_time=0.5):
     """

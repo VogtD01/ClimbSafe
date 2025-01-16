@@ -75,17 +75,18 @@ def button_pressed_handler(pin):
 # Interrupt-Handler für den Button
 
 
-def debounce(pin):
+'''def debounce(pin):
 	# Timer wird mit einer Verzögerung von 200ms gestartet. 
 	# Nach Ablauf wird die callback Funktion "button_pressed_handler" aufgerufen
-	timer.init(mode=Timer.ONE_SHOT, period=200, callback=button_pressed_handler)
+	timer.init(mode=Timer.ONE_SHOT, period=200, callback=button_pressed_handler)'''
 
 # Hardware timer init.
-timer = Timer(0)
+#timer = Timer(0)
+timer1 = Timer(1)
 ###########################################################
 
 # Button-Interrupt hinzufügen
-button.irq(trigger=Pin.IRQ_FALLING, handler=debounce)
+button.irq(trigger=Pin.IRQ_FALLING, handler=button_pressed_handler)
 
 
 #--------------------------------------------------------------------------------------------------------------------
@@ -113,9 +114,7 @@ while True:
     if magnitude < FALL_THRESHOLD:
         
         blue.value(1)  # Blaue LED einschalten
-        time.sleep(5)  # LED für 5 Sekunden anlassen
-        blue.value(0)  # Blaue LED ausschalten
-
+        
         # Nachricht senden: "100" für freien Fall erkannt
         rfm9x.send(bytes([0b100]))
         print("Fall detected Nachricht gesendet!")
@@ -130,14 +129,16 @@ while True:
 
         # Paketinhalte analysieren (binäre Zustände)
         if packet[0] == 0b001:  # "001" entspricht "Button gedrückt"
+            timer1.deinit() # Timer stoppen um fall_nachricht_empfänger zu verhindern
             f.button_nachricht(red, green, piezo_pin)  # Funktion für das Empfängergerät
 
+
         elif packet[0] == 0b100:  # "100" entspricht "Fall erkannt"
-            f.fall_nachricht_empfänger(red, blue, piezo_pin)  # Funktion für das Empfängergerät nach einem Fall
+            red.value(1)
+
+            # timer starten
+            timer1.init(mode=Timer.ONE_SHOT, period=10000, callback=lambda t: f.fall_nachricht_empfänger(red, blue, piezo_pin))
 
         elif packet[0] == 0b010:  # "010" entspricht "Doppelklick, Verletzt"
             f.verletzt_nachricht_empfänger(red, green, piezo_pin)  # Funktion für das Empfängergerät bei Verletzung
 
-        # Signalstärke (RSSI) des empfangenen Pakets auslesen und ausgeben
-        rssi = rfm9x.last_rssi
-        print("Received signal strength: {0} dB".format(rssi))
