@@ -1,4 +1,4 @@
-from machine import SPI, Pin, PWM, I2C
+from machine import SPI, Pin, PWM, I2C, Timer
 from adafruit_rfm9x import *
 from ADXL345 import ADXL345_I2C
 import time
@@ -43,6 +43,7 @@ last_button_press_time = 0
 button_press_count = 0
 
 
+
 # Funktion für den Button-Interrupt
 def button_pressed_handler(pin):
     """Funktion, die aufgerufen wird, wenn der Button gedrückt wird.
@@ -69,6 +70,19 @@ def button_pressed_handler(pin):
         print("Button gedrückt Nachricht gesendet!")
         f.einmal_drücken_nachricht(piezo_pin)
 
+
+#####################################
+# Interrupt-Handler für den Button
+
+
+def debounce(pin):
+	# Timer wird mit einer Verzögerung von 200ms gestartet. 
+	# Nach Ablauf wird die callback Funktion "button_pressed_handler" aufgerufen
+	timer.init(mode=Timer.ONE_SHOT, period=200, callback=button_pressed_handler)
+
+# Hardware timer init.
+timer = Timer(0)
+###########################################################
 
 # Button-Interrupt hinzufügen
 button.irq(trigger=Pin.IRQ_FALLING, handler=button_pressed_handler)
