@@ -1,50 +1,47 @@
 import math
 import time
-from machine import Pin, PWM
+from machine import Pin, PWM, Timer
 import status
-
-# fall_detected = main.fall_detected <--------------------------------------------------------------------------------------------
 
 def calculate_magnitude(x, y, z):
     """Berechnet die Magnitude des Beschleunigungsvektors."""
     return math.sqrt(x**2 + y**2 + z**2)
 
-def anschalten(red, blue, piezo_pin):
-    """Funktion, um den Zustand "Gerät eingeschaltet" zu behandeln.
-    
-    Diese Funktion aktiviert die blaue LED und den Piezo-Summer für 1 Sekunde."""
-    
-    blue.value(1)  # Blaue LED einschalten
+def anschalten(red, green, piezo_pin):
+    """Funktion, um den Zustand "Gerät eingeschaltet" zu behandeln."""
+    green.value(1)  # Grüne LED einschalten
     red.value(1)  # Rote LED einschalten
     piezo_pin.duty(512)  # Piezo aktivieren
-    time.sleep(1)  # 1 Sekunde warten
-    blue.value(0)  # Blaue LED ausschalten
-    red.value(0)  # Rote LED ausschalten
-    piezo_pin.duty(0)  # Piezo deaktivieren
+    
+    # Timer starten, um nach 1 Sekunde auszuschalten
+    timer_f.init(mode=Timer.ONE_SHOT, period=1000, callback=lambda t: ausschalten(red, green, piezo_pin))
 
-def einmal_drücken_nachricht(piezo_pin):
+def drücken_nachricht(red, green, piezo_pin):
     """Funktion, was am eigenen ESP passiert wenn der Button gedrückt wird."""
     piezo_pin.duty(512)  # Piezo aktivieren
-    time.sleep(0.5)   #damit man merkt, dass der Button gedrückt wurde
-    piezo_pin.duty(0)
-
-def zweimal_drücken_nachricht(piezo_pin):
-    """Funktion, was am eigenen ESP passiert wenn der Button zweimal gedrückt wird."""
-    piezo_pin.duty(512)  # Piezo aktivieren
-    time.sleep(0.5)   #damit man merkt, dass der Button gedrückt wurde
-    piezo_pin.duty(0)
+    red.value(0)
+    green.value(1)
+    # Timer starten, um Piezo nach 0.5 Sekunden auszuschalten
+    timer_f.init(mode=Timer.ONE_SHOT, period=500, callback=lambda t: ausschalten(red, green, piezo_pin))
 
 def button_nachricht(red, green, piezo_pin):
-    """Funktion, um den Zustand "Button gedrückt" zu behandeln beim Empfänger.
-    Diese Funktion aktiviert die rote und grüne LED sowie den Piezo-Summer für 1 Sekunde."""
+    """Funktion, um den Zustand "Button gedrückt" zu behandeln beim Empfänger."""
     red.value(1)  # Rote LED einschalten
     green.value(1)  # Grüne LED einschalten
     piezo_pin.duty(512)  # Piezo aktivieren
-    time.sleep(1)
+    
+    # Timer starten, um nach 1 Sekunde auszuschalten
+    timer_f.init(mode=Timer.ONE_SHOT, period=1000, callback=lambda t: ausschalten(red, green, piezo_pin))
+
+def ausschalten(red, green, piezo_pin):
+    """Funktion, um LEDs und Piezo auszuschalten."""
+    
     red.value(0)  # Rote LED ausschalten
     green.value(0)  # Grüne LED ausschalten
     piezo_pin.duty(0)  # Piezo deaktivieren
 
+# Beispiel: Initialisierung des Timers
+timer_f = Timer(0)
 
 ##############
 

@@ -63,12 +63,12 @@ def button_pressed_handler(pin):
     if button_press_count == 2:
         rfm9x.send(bytes([0b010]))
         print("Doppelklick Nachricht gesendet!")
-        f.zweimal_drücken_nachricht(piezo_pin)
+        f.drücken_nachricht(red, green, piezo_pin)
     else:
         status.fall_detected = False
         rfm9x.send(bytes([0b001]))
         print("Button gedrückt Nachricht gesendet!")
-        f.einmal_drücken_nachricht(piezo_pin)
+        f.drücken_nachricht(red, green, piezo_pin)
 
 
 #####################################
@@ -94,7 +94,7 @@ print("Waiting for packets...")
 
 # Ab hier der Hauptteil des Programms
 
-f.anschalten(red, blue, piezo_pin)  # Gerät einschalten
+f.anschalten(red, green, piezo_pin)  # Gerät einschalten
 
 
 while True:
