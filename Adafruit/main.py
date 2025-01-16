@@ -44,15 +44,11 @@ button_press_count = 0
 
 
 
-# Funktion für den Button-Interrupt
 def button_pressed_handler(pin):
-    """Funktion, die aufgerufen wird, wenn der Button gedrückt wird.
-    
-    Diese Funktion sendet eine Nachricht über das Funkmodul, wenn der Button gedrückt wird.
-    Bei einem Doppelklick wird eine andere Nachricht gesendet."""
-
     global last_button_press_time, button_press_count
     current_time = time.ticks_ms()
+    
+    # Prüfe, ob Doppelklick erkannt wird
     if time.ticks_diff(current_time, last_button_press_time) <= 2000:
         button_press_count += 1
     else:
@@ -65,11 +61,10 @@ def button_pressed_handler(pin):
         print("Doppelklick Nachricht gesendet!")
         f.drücken_nachricht(red, green, piezo_pin)
     else:
-        status.fall_detected = False
+        status.fall_detected = False  # Status zurücksetzen
         rfm9x.send(bytes([0b001]))
         print("Button gedrückt Nachricht gesendet!")
         f.drücken_nachricht(red, green, piezo_pin)
-
 
 #####################################
 # Interrupt-Handler für den Button

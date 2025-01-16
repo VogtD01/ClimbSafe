@@ -68,27 +68,28 @@ def fall_sender(red, blue, piezo_pin):
     ausschalten(red, blue, piezo_pin)
 ############
 
+# Neuer Ansatz für fall_nachricht_empfänger
+
 def fall_nachricht_empfänger(red, blue, piezo_pin):
-    """Funktion, um den Zustand "Fall erkannt" zu behandeln.
+    """Funktion, um den Zustand 'Fall erkannt' zu behandeln."""
     
-    Diese Funktion aktiviert die rote und blaue LED sowie den Piezo-Summer.
-    Nach 10
-    Sekunden wird der Piezo-Summer aktiviert, wenn der Button nicht in der zeit gedrückt wurde."""
+    def check_fall_status(timer):
+        """Prüft den Status 'fall_detected' regelmäßig."""
+        if not status.fall_detected:  # Wenn `fall_detected` False ist
+            timer.deinit()  # Timer stoppen
+            ausschalten(red, blue, piezo_pin)  # LEDs und Piezo ausschalten
+            print("Fall beendet. Status zurückgesetzt.")
+        else:
+            # LEDs aktivieren und Piezo-Muster abspielen
+            blue.value(1)  # Blaue LED einschalten
+            piezo_pin.duty(500)  # Kürzeres Muster
 
-    # LEDs aktivieren und Piezo erst nach 10 Sekunden einschalten, falls der Button nicht gedrückt wird
-
-    # global fall_detected<--------------------------------------------------------------------------------------------
+    # Status auf True setzen und Timer starten
     status.fall_detected = True
-    start_time = time.time()  # Startzeitpunkt erfassen
+    timer_f.init(mode=Timer.PERIODIC, period=100, callback=check_fall_status)  # Alle 100 ms prüfen
 
-    while status.fall_detected:
-        blue.value(1)  # Blaue LED einschalten
-        piezo_pattern(piezo_pin, duration=1, on_time=0.1, off_time=0.2)  # Kürzeres Muster
 
-        time.sleep(0.1)  # Kurze Pause, um CPU-Last zu reduzieren
-
-    ausschalten(red, blue, piezo_pin)  # LEDs und Piezo ausschalten
-
+    
 def verletzt_nachricht_empfänger(red, green, piezo_pin):
     """Funktion, um den Zustand "Verletzung erkannt" zu behandeln.
     
