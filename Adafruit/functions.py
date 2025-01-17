@@ -3,61 +3,62 @@ import time
 from machine import Pin, PWM, Timer
 import status
 
-def calculate_magnitude(x, y, z):
+# Initialisierung des Timers
+timer_f = Timer(0)
+
+def beschleunigungsvektor_berechnen(x, y, z):
     """Berechnet die Magnitude des Beschleunigungsvektors."""
     return math.sqrt(x**2 + y**2 + z**2)
 
 def anschalten(red, green, piezo_pin):
     """Funktion, um den Zustand "Gerät eingeschaltet" zu behandeln."""
-    green.value(1)  # Grüne LED einschalten
-    red.value(1)  # Rote LED einschalten
-    piezo_pin.duty(512)  # Piezo aktivieren
+    green.value(1)  
+    red.value(1)
+    piezo_pin.duty(512)
     
     # Timer starten, um nach 1 Sekunde auszuschalten
     timer_f.init(mode=Timer.ONE_SHOT, period=1000, callback=lambda t: ausschalten(red, green, piezo_pin))
 
 def drücken_nachricht(red, green, piezo_pin):
     """Funktion, was am eigenen ESP passiert wenn der Button gedrückt wird."""
-    piezo_pin.duty(512)  # Piezo aktivieren
-    red.value(0)
+    piezo_pin.duty(512)
+    red.value(0) 
     green.value(1)
+
     # Timer starten, um Piezo nach 0.5 Sekunden auszuschalten
     timer_f.init(mode=Timer.ONE_SHOT, period=500, callback=lambda t: ausschalten(red, green, piezo_pin))
 
 def button_nachricht(red, green, piezo_pin):
     """Funktion, um den Zustand "Button gedrückt" zu behandeln beim Empfänger."""
     status.fall_detected = False
-    red.value(1)  # Rote LED einschalten
-    green.value(1)  # Grüne LED einschalten
-    piezo_pin.duty(512)  # Piezo aktivieren
+
+    red.value(1) 
+    green.value(1)
+    piezo_pin.duty(512)
     
     # Timer starten, um nach 1 Sekunde auszuschalten
     timer_f.init(mode=Timer.ONE_SHOT, period=1000, callback=lambda t: ausschalten(red, green, piezo_pin))
 
 def ausschalten(red, green, piezo_pin):
-    """Funktion, um LEDs und Piezo auszuschalten."""
+    """Callback-Funktion, um die LEDs und den Piezo-Speaker auszuschalten."""
     
-    red.value(0)  # Rote LED ausschalten
-    green.value(0)  # Grüne LED ausschalten
-    piezo_pin.duty(0)  # Piezo deaktivieren
+    red.value(0)
+    green.value(0)
+    piezo_pin.duty(0)
 
-# Beispiel: Initialisierung des Timers
-timer_f = Timer(0)
-
-##############
-
+#---------------------------------------Funktionen für den Fall-Status-----------------------------------------------------------------------------
 
 def fall_sender(red, blue, piezo_pin):
     """Funktion, um den Zustand nach dem Sturz beim Sender zu behandeln.
     
-    Diese Funktion aktiviert die rote und blaue LED sowie den Piezo-Summer.
-    Nach 10
-    Sekunden wird der Piezo-Summer aktiviert, wenn der Button nicht in der zeit gedrückt wurde."""
+    Diese Funktion aktiviert die rote LED sowie den Piezo-Speaker nach 10s.
+    """
 
     start_time = time.time()
-    status.fall_detected = True  # Zugriff über das Modul
+    status.fall_detected = True  
     
-    while status.fall_detected:  # Zugriff über das Modul
+    # LEDs und Piezo aktivieren, bis der Zustand beendet wird
+    while status.fall_detected:
         red.value(1)
         
         if time.time() - start_time >= 10:
@@ -66,9 +67,6 @@ def fall_sender(red, blue, piezo_pin):
         time.sleep(0.1)
 
     ausschalten(red, blue, piezo_pin)
-############
-
-# Neuer Ansatz für fall_nachricht_empfänger
 
 def fall_nachricht_empfänger(red, blue, piezo_pin):
     """Funktion, um den Zustand 'Fall erkannt' zu behandeln."""
@@ -98,13 +96,12 @@ def verletzt_nachricht_empfänger(red, green, piezo_pin):
 
     # LEDs und Piezo aktivieren, bis der Zustand beendet wird
 
-    # global fall_detected<--------------------------------------------------------------------------------------------
     status.fall_detected = True
 
     while status.fall_detected:
         red.value(1)
         green.value(0)
-        piezo_pattern(piezo_pin, duration=0.8, on_time=0.4, off_time=0.4)  # Kürzeres Muster
+        piezo_pin.duty(512)
         time.sleep(0.5)
 
         red.value(0)
@@ -114,19 +111,3 @@ def verletzt_nachricht_empfänger(red, green, piezo_pin):
 
     ausschalten(red, green, piezo_pin)  # LEDs und Piezo ausschalten
 
-def piezo_pattern(piezo_pin, duration=10, on_time=0.5, off_time=0.5):
-    """
-    Erzeugt ein akustisches Muster für den Piezo-Lautsprecher.
-
-    Args:
-        piezo_pin (PWM): Der Pin, der den Piezo steuert.
-        duration (float): Gesamtdauer des Musters in Sekunden.
-        on_time (float): Dauer, für die der Piezo eingeschaltet bleibt (Sekunden).
-        off_time (float): Dauer, für die der Piezo ausgeschaltet bleibt (Sekunden).
-    """
-    start_time = time.time()
-    while time.time() - start_time < duration:
-        piezo_pin.duty(512)  # Piezo aktivieren
-        time.sleep(on_time)  # Zeit für Ton
-        piezo_pin.duty(0)    # Piezo deaktivieren
-        time.sleep(off_time)  # Pause
