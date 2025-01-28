@@ -21,7 +21,6 @@ imu = ADXL345_I2C(i2c)
 # LED Konfiguration
 red = Pin(13, Pin.OUT )
 green = Pin(12, Pin.OUT)
-blue = Pin(2, Pin.OUT )  # LED am ESP32 zur Kontrolle
 
 # Piezo-speaker Konfiguration
 piezo_pin = PWM(Pin(15))
@@ -69,7 +68,7 @@ def button_pressed_handler(pin):
         rfm9x.send(bytes([0b001]))
         print("Button gedrückt Nachricht gesendet!")
     
-    f.drücken_nachricht(red, green, piezo_pin) # Hinweis für das Sendegerät, dass der Button gedrückt wurde
+    f.drücken_nachricht(green, piezo_pin) # Hinweis für das Sendegerät, dass der Button gedrückt wurde
 
 # Funktion für den Button-Debounce
 def debounce(pin):
@@ -93,7 +92,7 @@ while True:
     packet = rfm9x.receive()
 
     # Beschleunigungswerte auslesen
-    x = imu.xValue / 256  # Werte in g umwandeln (1 g = 256 Einheiten, Bereich: -2g bis +2g)
+    x = imu.xValue / 256  # Werte in g umwandeln
     y = imu.yValue / 256
     z = imu.zValue / 256
 
@@ -103,12 +102,10 @@ while True:
     # Prüfe auf freien Fall anhand eines Schwellenwerts
     if beschleunigung < fall_threshold:
         
-        blue.value(1)  # Blaue LED einschalten
-        
         rfm9x.send(bytes([0b100])) # Nachricht senden: "100" für freien Fall erkannt
         print("Fall detected Nachricht gesendet!")
 
-        f.fall_sender(red, blue, piezo_pin)  # Hinweis für das Sendegerät, dass ein Fall erkannt wurde
+        f.fall_sender(red, piezo_pin)  # Hinweis für das Sendegerät, dass ein Fall erkannt wurde
 
     # Prüfe, ob ein Paket empfangen wurde
     if packet is None:
@@ -122,13 +119,13 @@ while True:
         # Paketinhalte analysieren (binäre Zustände)
         if packet[0] == 0b001:  # "001" entspricht "Button gedrückt"
             timer_sturz.deinit() # Timer stoppen um fall_nachricht_empfänger zu verhindern
-            f.button_nachricht(red, green, piezo_pin)  # Hinweis für das Empfängergerät, dass der Button gedrückt wurde
+            f.button_nachricht(green, piezo_pin)  # Hinweis für das Empfängergerät, dass der Button gedrückt wurde
 
         elif packet[0] == 0b100:  # "100" entspricht "Fall erkannt"
             red.value(1)
 
             # Timer starten, um nach 10 Sekunden eine Nachricht an den Empfänger zu senden
-            timer_sturz.init(mode=Timer.ONE_SHOT, period=10000, callback=lambda t: f.fall_nachricht_empfänger(red, blue, piezo_pin))
+            timer_sturz.init(mode=Timer.ONE_SHOT, period=10000, callback=lambda t: f.fall_nachricht_empfänger(red, piezo_pin))
 
         elif packet[0] == 0b010:  # "010" entspricht "Doppelklick, Verletzt"
             f.verletzt_nachricht_empfänger(red, green, piezo_pin)  # Hinweis für den Empfänger, dass der Benutzer verletzt ist
