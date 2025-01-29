@@ -19,23 +19,23 @@ def anschalten(red, green, piezo_pin):
     # Timer starten, um nach 1 Sekunde auszuschalten
     timer_f.init(mode=Timer.ONE_SHOT, period=1000, callback=lambda t: ausschalten(red, green, piezo_pin))
 
-def drücken_nachricht(green, piezo_pin):
+def drücken_nachricht(red, green, piezo_pin):
     """Funktion, was am eigenen ESP passiert wenn der Button gedrückt wird."""
     piezo_pin.duty(512)
     green.value(1)
 
     # Timer starten, um Piezo nach 0.5 Sekunden auszuschalten
-    timer_f.init(mode=Timer.ONE_SHOT, period=500, callback=lambda t: ausschalten(None, green, piezo_pin))
+    timer_f.init(mode=Timer.ONE_SHOT, period=500, callback=lambda t: ausschalten(red, green, piezo_pin))
 
-def button_nachricht(green, piezo_pin):
+def button_nachricht(red, green, piezo_pin):
     """Funktion, um den Zustand "Button gedrückt" zu behandeln beim Empfänger."""
     status.fall_detected = False
- 
+    
     green.value(1)
     piezo_pin.duty(512)
     
     # Timer starten, um nach 1 Sekunde auszuschalten
-    timer_f.init(mode=Timer.ONE_SHOT, period=1000, callback=lambda t: ausschalten(None, green, piezo_pin))
+    timer_f.init(mode=Timer.ONE_SHOT, period=1000, callback=lambda t: ausschalten(red, green, piezo_pin))
 
 def ausschalten(red, green, piezo_pin):
     """Callback-Funktion, um die LEDs und den Piezo-Speaker auszuschalten."""
@@ -81,6 +81,7 @@ def fall_nachricht_empfänger(red, piezo_pin):
         else:
             # LEDs aktivieren und Piezo-Muster abspielen
             piezo_pin.duty(500)  # Kürzeres Muster
+            red.value(1)
 
     # Status auf True setzen und Timer starten
     status.fall_detected = True

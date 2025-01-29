@@ -68,7 +68,7 @@ def button_pressed_handler(pin):
         rfm9x.send(bytes([0b001]))
         print("Button gedrückt Nachricht gesendet!")
     
-    f.drücken_nachricht(green, piezo_pin) # Hinweis für das Sendegerät, dass der Button gedrückt wurde
+    f.drücken_nachricht(red, green, piezo_pin) # Hinweis für das Sendegerät, dass der Button gedrückt wurde
 
 # Funktion für den Button-Debounce
 def debounce(pin):
@@ -119,7 +119,7 @@ while True:
         # Paketinhalte analysieren (binäre Zustände)
         if packet[0] == 0b001:  # "001" entspricht "Button gedrückt"
             timer_sturz.deinit() # Timer stoppen um fall_nachricht_empfänger zu verhindern
-            f.button_nachricht(green, piezo_pin)  # Hinweis für das Empfängergerät, dass der Button gedrückt wurde
+            f.button_nachricht(red, green, piezo_pin)  # Hinweis für das Empfängergerät, dass der Button gedrückt wurde
 
         elif packet[0] == 0b100:  # "100" entspricht "Fall erkannt"
             red.value(1)
