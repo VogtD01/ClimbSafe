@@ -302,7 +302,7 @@
         </mxCell>
         <mxCell id="Cae1Fh06i_Z32I73O_z3-116" value="&lt;b&gt;RESET&lt;/b&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;" vertex="1" connectable="0" parent="Cae1Fh06i_Z32I73O_z3-113">
           <mxGeometry x="0.463" relative="1" as="geometry">
-            <mxPoint as="offset" />
+            <mxPoint x="11" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="Cae1Fh06i_Z32I73O_z3-115" style="edgeStyle=orthogonalEdgeStyle;shape=connector;curved=0;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.002;entryY=0.364;entryDx=0;entryDy=0;entryPerimeter=0;strokeColor=#BD7000;align=center;verticalAlign=middle;fontFamily=Helvetica;fontSize=11;fontColor=default;labelBackgroundColor=default;startFill=0;endArrow=none;fillColor=#f0a30a;gradientColor=#ffa500;strokeWidth=2;" edge="1" parent="1" source="Cae1Fh06i_Z32I73O_z3-12" target="Cae1Fh06i_Z32I73O_z3-20">
