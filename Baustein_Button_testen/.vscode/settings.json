@@ -1,0 +1,17 @@
+{
+    "python.languageServer": "Pylance",
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    "python.autoComplete.extraPaths": [
+    "lib",
+    "../micropython-stubs/stubs/cpython_core-pycopy",
+    "../micropython-stubs/stubs/micropython-v1_18-frozen/esp32/GENERIC",
+    "../micropython-stubs/stubs/micropython-v1_18-esp32",
+    ],
+    "python.analysis.extraPaths": [
+    "lib",
+    "../micropython-stubs/stubs/cpython_core-pycopy",
+    "../micropython-stubs/stubs/micropython-v1_18-frozen/esp32/GENERIC",
+    "../micropython-stubs/stubs/micropython-v1_18-esp32"
+    ]
+  }
