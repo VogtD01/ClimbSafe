@@ -6,22 +6,22 @@ import time
 import math
 
 # Initialisiere I2C und den IMU-Sensor
-i2c = I2C(0, scl=Pin(22), sda=Pin(21))  # Passen Sie die Pins ggf. an Ihre Hardware an
+i2c = I2C(0, scl=Pin(22), sda=Pin(21))  # I2C-Bus initialisieren
 imu = ADXL345_I2C(i2c)
 
 # LED konfigurieren
 led1 = Pin(2, Pin.OUT)
 
-# Button konfigurieren (GPIO 12)
-button = Pin(12, Pin.IN, Pin.PULL_UP)  # Pull-Up aktiviert für stabilen High-Zustand
+# Button konfigurieren (GPIO 14)
+button = Pin(14, Pin.IN, Pin.PULL_UP)  # Pull-Up-Widerstand aktivieren
 
-# Piezo-Lautsprecher konfigurieren (GPIO 25)
-piezo = PWM(Pin(25))  # PWM-Signal für Tonerzeugung
+# Piezo-Lautsprecher konfigurieren (GPIO 15)
+piezo = PWM(Pin(15))  # PWM-Signal für Tonerzeugung
 piezo.freq(1000)  # Standardfrequenz (1 kHz)
 piezo.duty(0)   # Piezo ausschalten
 
 # Schwellenwert für freien Fall (nahe 0 g in allen Achsen)
-FALL_THRESHOLD = 0.2  # g-Wert, anpassbar
+FALL_THRESHOLD = 0.35  
 
 # Variable, um zu speichern, ob ein freier Fall erkannt wurde
 fall_detected = False
@@ -33,7 +33,7 @@ def calculate_magnitude(x, y, z):
 while True:
     if not fall_detected:  # Nur prüfen, wenn freier Fall noch nicht erkannt wurde
         # Lese die Beschleunigungswerte
-        x = imu.xValue / 256  # Werte in g umwandeln (Division anpassen, falls nötig)
+        x = imu.xValue / 256  
         y = imu.yValue / 256
         z = imu.zValue / 256
 
@@ -54,12 +54,12 @@ while True:
         if button.value() == 0:  # Button gedrückt (LOW)
             fall_detected = False  # Reset des Fall-Detektionsstatus
             print("Reset fall detection.")
-            led1.value(0)
-            piezo.duty(0)  # Piezo ausschalten
+            led1.value(0)  
+            piezo.duty(0) 
         else:
             print("Fall detected!")
             # Piezo-Lautsprecher für 1 Sekunde aktivieren
-            piezo.duty(212)
+            piezo.duty(512)
             led1.value(1)
             time.sleep(1)
             piezo.duty(0)

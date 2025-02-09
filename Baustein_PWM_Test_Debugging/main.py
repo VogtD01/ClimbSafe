@@ -8,15 +8,15 @@ pwm1 = PWM(led_pin1)
 pwm.freq(1000)
 pwm1.freq(1000)
 
-# Function to dim the LED
+# Funktion zum Dimmen der LEDs
 def dim_led():
-    # Increase brightness
+    # erhöhe Helligkeit
     for duty in range(0, 1024, 10):
         pwm.duty(duty)
         pwm1.duty(duty)
         time.sleep(0.05)
     
-    # Decrease brightness
+    # verringere Helligkeit
     for duty in range(1023, -1, -10):
         pwm.duty(duty)
         pwm1.duty(duty)
