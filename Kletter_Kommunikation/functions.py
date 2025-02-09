@@ -93,7 +93,7 @@ def verletzt_nachricht_empfänger(red, green, piezo_pin):
     """Funktion, um den Zustand "Verletzung erkannt" zu behandeln.
     
     Diese Funktion aktiviert die rote und grüne LED  sowie den Piezo-Summer.
-    Die LEDs und der Piezo-Summer wechseln sich alle 0,5 Sekunden ab, bis der button gedrückt wird wird."""
+    Die LEDs und der Piezo-Summer wechseln sich alle 0,3 Sekunden ab, bis der button gedrückt wird wird."""
 
     # LEDs und Piezo aktivieren, bis der Zustand beendet wird
 
